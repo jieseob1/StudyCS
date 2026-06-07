@@ -1,0 +1,71 @@
+# API Resilience (복원력) 테스트 환경
+#
+# 목적: Retry + Exponential Backoff 적용 전후 성공률 비교
+#   - Before: 재시도 없음 => ~78% 성공 (WireMock 78% 성공률 반영)
+#   - After:  3회 재시도 + 지수 백오프 => ~98% 성공
+#
+# WireMock이 불안정한 외부 API를 시뮬레이션 (9-state 사이클):
+#   - 78% (7/9) => 200 OK
+#   - 11% (1/9) => 500 Internal Server Error
+#   - 11% (1/9) => 응답 지연 10초 (타임아웃 유발)
+#
+# 실행:
+#   docker-compose up -d
+#   k6 run k6-api-test.js
+
+version: '3.8'
+
+services:
+  # WireMock: 불안정한 외부 API 시뮬레이터
+  wiremock:
+    image: wiremock/wiremock:3.3.1
+    container_name: perf-wiremock
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./wiremock-mappings:/home/wiremock/mappings:ro
+    command: >
+      --verbose
+      --global-response-templating
+      --max-request-journal-entries=1000
+    networks:
+      - resilience-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/__admin/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # Resilience API: 재시도/백오프 로직을 포함한 프록시 서버
+  resilience-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: perf-resilience-api:latest
+    container_name: perf-resilience-api
+    environment:
+      - WIREMOCK_URL=http://wiremock:8080
+      - PORT=3001
+      - NODE_ENV=production
+    ports:
+      - "3001:3001"
+    networks:
+      - resilience-net
+    depends_on:
+      wiremock:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:3001/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+
+networks:
+  resilience-net:
+    driver: bridge

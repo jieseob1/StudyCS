@@ -1,0 +1,330 @@
+{
+  "_comment": "WireMock 확률적 응답 분배 설정",
+  "_description": [
+    "WireMock 3.x의 randomDistribution 트랜스포머를 활용한 확률적 응답",
+    "78% 성공(200) / 11% 서버 오류(500) / 11% 지연 응답(10s delay)",
+    "Scenario 기반으로 상태를 순환하여 분배를 구현합니다."
+  ],
+
+  "mappings": [
+    {
+      "uuid": "aa000001-0000-0000-0000-000000000001",
+      "name": "unstable-api-success-78pct-1",
+      "priority": 1,
+      "scenarioName": "UnstableApiDistribution",
+      "requiredScenarioState": "STARTED",
+      "newScenarioState": "STATE_2",
+      "request": {
+        "method": "GET",
+        "urlPattern": "/external/data"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Response-Type": "success",
+          "X-Scenario": "78pct-success"
+        },
+        "jsonBody": {
+          "status": "success",
+          "requestId": "{{randomValue type='UUID'}}",
+          "timestamp": "{{now format='yyyy-MM-dd\\'T\\'HH:mm:ss\\'Z\\'' timezone='UTC'}}",
+          "data": {
+            "productId": "{{randomValue type='NUMERIC' length=8}}",
+            "productName": "Sample Product {{randomValue type='ALPHANUMERIC' length=4}}",
+            "price": 9900,
+            "stock": 100
+          }
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+    {
+      "uuid": "aa000002-0000-0000-0000-000000000002",
+      "name": "unstable-api-success-78pct-2",
+      "priority": 1,
+      "scenarioName": "UnstableApiDistribution",
+      "requiredScenarioState": "STATE_2",
+      "newScenarioState": "STATE_3",
+      "request": {
+        "method": "GET",
+        "urlPattern": "/external/data"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Response-Type": "success"
+        },
+        "jsonBody": {
+          "status": "success",
+          "requestId": "{{randomValue type='UUID'}}",
+          "timestamp": "{{now format='yyyy-MM-dd\\'T\\'HH:mm:ss\\'Z\\'' timezone='UTC'}}",
+          "data": {
+            "productId": "{{randomValue type='NUMERIC' length=8}}",
+            "productName": "Another Product {{randomValue type='ALPHANUMERIC' length=4}}",
+            "price": 15000,
+            "stock": 50
+          }
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+    {
+      "uuid": "aa000003-0000-0000-0000-000000000003",
+      "name": "unstable-api-success-78pct-3",
+      "priority": 1,
+      "scenarioName": "UnstableApiDistribution",
+      "requiredScenarioState": "STATE_3",
+      "newScenarioState": "STATE_4",
+      "request": {
+        "method": "GET",
+        "urlPattern": "/external/data"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Response-Type": "success"
+        },
+        "jsonBody": {
+          "status": "success",
+          "requestId": "{{randomValue type='UUID'}}",
+          "timestamp": "{{now format='yyyy-MM-dd\\'T\\'HH:mm:ss\\'Z\\'' timezone='UTC'}}",
+          "data": {
+            "productId": "{{randomValue type='NUMERIC' length=8}}",
+            "productName": "Third Product",
+            "price": 5500,
+            "stock": 200
+          }
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+    {
+      "uuid": "aa000004-0000-0000-0000-000000000004",
+      "name": "unstable-api-success-78pct-4",
+      "priority": 1,
+      "scenarioName": "UnstableApiDistribution",
+      "requiredScenarioState": "STATE_4",
+      "newScenarioState": "STATE_5",
+      "request": {
+        "method": "GET",
+        "urlPattern": "/external/data"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Response-Type": "success"
+        },
+        "jsonBody": {
+          "status": "success",
+          "requestId": "{{randomValue type='UUID'}}",
+          "timestamp": "{{now format='yyyy-MM-dd\\'T\\'HH:mm:ss\\'Z\\'' timezone='UTC'}}",
+          "data": {
+            "productId": "{{randomValue type='NUMERIC' length=8}}",
+            "productName": "Fourth Product",
+            "price": 12000,
+            "stock": 75
+          }
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+    {
+      "uuid": "aa000005-0000-0000-0000-000000000005",
+      "name": "unstable-api-success-78pct-5",
+      "priority": 1,
+      "scenarioName": "UnstableApiDistribution",
+      "requiredScenarioState": "STATE_5",
+      "newScenarioState": "STATE_6",
+      "request": {
+        "method": "GET",
+        "urlPattern": "/external/data"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Response-Type": "success"
+        },
+        "jsonBody": {
+          "status": "success",
+          "requestId": "{{randomValue type='UUID'}}",
+          "timestamp": "{{now format='yyyy-MM-dd\\'T\\'HH:mm:ss\\'Z\\'' timezone='UTC'}}",
+          "data": {
+            "productId": "{{randomValue type='NUMERIC' length=8}}",
+            "productName": "Fifth Product",
+            "price": 8800,
+            "stock": 150
+          }
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+    {
+      "uuid": "aa000006-0000-0000-0000-000000000006",
+      "name": "unstable-api-success-78pct-6",
+      "priority": 1,
+      "scenarioName": "UnstableApiDistribution",
+      "requiredScenarioState": "STATE_6",
+      "newScenarioState": "STATE_7",
+      "request": {
+        "method": "GET",
+        "urlPattern": "/external/data"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Response-Type": "success"
+        },
+        "jsonBody": {
+          "status": "success",
+          "requestId": "{{randomValue type='UUID'}}",
+          "timestamp": "{{now format='yyyy-MM-dd\\'T\\'HH:mm:ss\\'Z\\'' timezone='UTC'}}",
+          "data": {
+            "productId": "{{randomValue type='NUMERIC' length=8}}",
+            "productName": "Sixth Product",
+            "price": 22000,
+            "stock": 30
+          }
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+    {
+      "uuid": "aa000007-0000-0000-0000-000000000007",
+      "name": "unstable-api-success-78pct-7",
+      "priority": 1,
+      "scenarioName": "UnstableApiDistribution",
+      "requiredScenarioState": "STATE_7",
+      "newScenarioState": "STATE_8",
+      "request": {
+        "method": "GET",
+        "urlPattern": "/external/data"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Response-Type": "success"
+        },
+        "jsonBody": {
+          "status": "success",
+          "requestId": "{{randomValue type='UUID'}}",
+          "timestamp": "{{now format='yyyy-MM-dd\\'T\\'HH:mm:ss\\'Z\\'' timezone='UTC'}}",
+          "data": {
+            "productId": "{{randomValue type='NUMERIC' length=8}}",
+            "productName": "Seventh Product",
+            "price": 6600,
+            "stock": 120
+          }
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+    {
+      "uuid": "aa000008-0000-0000-0000-000000000008",
+      "name": "unstable-api-500-error-11pct",
+      "priority": 1,
+      "scenarioName": "UnstableApiDistribution",
+      "requiredScenarioState": "STATE_8",
+      "newScenarioState": "STATE_9",
+      "request": {
+        "method": "GET",
+        "urlPattern": "/external/data"
+      },
+      "response": {
+        "status": 500,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Response-Type": "server-error"
+        },
+        "jsonBody": {
+          "error": "INTERNAL_SERVER_ERROR",
+          "message": "Upstream service temporarily unavailable",
+          "timestamp": "{{now format='yyyy-MM-dd\\'T\\'HH:mm:ss\\'Z\\'' timezone='UTC'}}",
+          "traceId": "{{randomValue type='UUID'}}",
+          "details": {
+            "retryable": true,
+            "retryAfterMs": 1000
+          }
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+    {
+      "uuid": "aa000009-0000-0000-0000-000000000009",
+      "name": "unstable-api-timeout-11pct",
+      "priority": 1,
+      "scenarioName": "UnstableApiDistribution",
+      "requiredScenarioState": "STATE_9",
+      "newScenarioState": "STARTED",
+      "request": {
+        "method": "GET",
+        "urlPattern": "/external/data"
+      },
+      "response": {
+        "status": 200,
+        "fixedDelayMilliseconds": 10000,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Response-Type": "timeout-simulation"
+        },
+        "jsonBody": {
+          "status": "success_but_delayed",
+          "note": "Response delayed by 10s to simulate timeout",
+          "timestamp": "{{now format='yyyy-MM-dd\\'T\\'HH:mm:ss\\'Z\\'' timezone='UTC'}}"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+
+    {
+      "uuid": "aa000010-0000-0000-0000-000000000010",
+      "name": "wiremock-admin-health",
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "url": "/__admin/health"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "status": "healthy"
+        }
+      }
+    }
+  ],
+
+  "_distribution_summary": {
+    "cycle_length": 9,
+    "state_1_STARTED":  "200 OK          (slot 1/9)",
+    "state_2":          "200 OK          (slot 2/9)",
+    "state_3":          "200 OK          (slot 3/9)",
+    "state_4":          "200 OK          (slot 4/9)",
+    "state_5":          "200 OK          (slot 5/9)",
+    "state_6":          "200 OK          (slot 6/9)",
+    "state_7":          "200 OK          (slot 7/9) → 7 slots = 78% success",
+    "state_8":          "500 Error       (slot 8/9) → 1 slot = 11% error",
+    "state_9":          "10s Delay/Timeout (slot 9/9) → 1 slot = 11% timeout",
+    "effective_rates": {
+      "success_200": "78% (7/9)",
+      "error_500": "11% (1/9)",
+      "timeout_10s": "11% (1/9)"
+    }
+  }
+}

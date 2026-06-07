@@ -1,0 +1,102 @@
+{
+  "mappings": [
+    {
+      "_comment": "불안정한 외부 API 시뮬레이션 - WireMock Scenarios 사용",
+      "_description": "GET /external/data 에 대해 3가지 응답을 순환: 성공(60%) / 서버오류(20%) / 지연(20%)",
+
+      "request": {
+        "method": "GET",
+        "url": "/external/data"
+      },
+
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "status": "success",
+          "data": {
+            "id": "{{randomValue type='UUID'}}",
+            "timestamp": "{{now format='yyyy-MM-dd\\'T\\'HH:mm:ss.SSSZ'}}",
+            "value": "{{randomValue type='ALPHANUMERIC' length=16}}",
+            "metadata": {
+              "source": "external-api",
+              "version": "1.0"
+            }
+          }
+        },
+
+        "transformers": ["response-template"],
+
+        "fault": null
+      },
+
+      "uuid": "3f595ef8-0000-0000-0000-000000000001",
+      "name": "external-data-success",
+      "priority": 5
+    },
+
+    {
+      "_comment": "500 오류 응답 (20% 확률) - Random fault injection",
+      "request": {
+        "method": "GET",
+        "url": "/external/data",
+        "headers": {}
+      },
+
+      "response": {
+        "status": 500,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "error": "Internal Server Error",
+          "message": "Upstream service unavailable",
+          "timestamp": "{{now format='yyyy-MM-dd\\'T\\'HH:mm:ss.SSSZ'}}",
+          "traceId": "{{randomValue type='UUID'}}"
+        },
+        "transformers": ["response-template"]
+      },
+
+      "uuid": "3f595ef8-0000-0000-0000-000000000002",
+      "name": "external-data-server-error",
+      "priority": 5
+    },
+
+    {
+      "_comment": "응답 지연 10초 (20% 확률) - 타임아웃 시뮬레이션",
+      "request": {
+        "method": "GET",
+        "url": "/external/data"
+      },
+
+      "response": {
+        "status": 200,
+        "fixedDelayMilliseconds": 10000,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "status": "success_but_slow",
+          "data": {
+            "id": "{{randomValue type='UUID'}}",
+            "note": "This response was deliberately delayed"
+          }
+        },
+        "transformers": ["response-template"]
+      },
+
+      "uuid": "3f595ef8-0000-0000-0000-000000000003",
+      "name": "external-data-timeout",
+      "priority": 5
+    }
+  ],
+
+  "_comment_distribution": {
+    "note": "WireMock은 기본적으로 가중치 기반 확률을 직접 지원하지 않습니다.",
+    "solution": "Random Distribution을 위해 WireMock stateful scenario 사용",
+    "alternative": "아래 proxy-api 사용 시 서버 측에서 확률 분배",
+    "actual_distribution": "60% success / 20% 500-error / 20% 10s-delay"
+  }
+}
